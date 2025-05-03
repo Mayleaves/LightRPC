@@ -1,6 +1,7 @@
 package com.wheelproject.rpc.server;
 
 import io.vertx.core.Vertx;
+
 /**
  * Vertx HTTP 服务器
  */
@@ -15,7 +16,7 @@ public class VertxHttpServer implements HttpServer {
         // 创建 Vert.x 实例
         Vertx vertx = Vertx.vertx();
 
-        // 创建 HTTP 服务器
+        // 创建 HTTP 服务器：Vert.x 官方核心包内自带的类
         io.vertx.core.http.HttpServer server = vertx.createHttpServer();
 
         // 监听端口并处理请求

@@ -8,19 +8,19 @@ import java.io.IOException;
 public interface Serializer {
     /**
      * 序列化
-     * @param object
+     * @param object：对象
      * @return
-     * @param <T>
+     * @param <T>：泛型方法声明
      * @throws IOException
      */
     <T> byte[] serialize(T object) throws IOException;
 
     /**
      * 反序列化
-     * @param bytes
-     * @param type
+     * @param bytes：要反序列化的字节数组
+     * @param type：反序列化后的类型
      * @return
-     * @param <T>
+     * @param <T>：泛型方法声明
      * @throws IOException
      */
     <T> T deserialize(byte[] bytes, Class<T> type) throws IOException;

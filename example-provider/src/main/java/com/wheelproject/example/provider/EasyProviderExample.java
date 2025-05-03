@@ -10,10 +10,10 @@ import com.wheelproject.rpc.server.VertxHttpServer;
  */
 public class EasyProviderExample {
     public static void main(String[] args){
-        // 注册服务
+        // 注册服务：服务名、服务实现类
         LocalRegistry.register(UserService.class.getName(), UserServiceImpl.class);
         // 启动 web 服务
         HttpServer httpServer = new VertxHttpServer();
-        httpServer.doStart(8080) ;
+        httpServer.doStart(8080);
     }
 }
