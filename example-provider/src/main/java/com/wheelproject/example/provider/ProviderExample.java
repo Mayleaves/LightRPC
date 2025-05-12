@@ -6,7 +6,7 @@ import com.wheelproject.rpc.registry.LocalRegistry;
 import com.wheelproject.rpc.server.NettyHttpServer;
 
 /**
- * 简易版启动 提供者
+ * 服务提供者示例
  */
 public class ProviderExample {
 

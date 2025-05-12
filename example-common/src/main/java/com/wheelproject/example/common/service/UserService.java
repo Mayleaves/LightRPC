@@ -12,4 +12,13 @@ public interface UserService {
      * @return
      */
     User getUser(User user);
+
+    /**
+     * 新方法 - 获取数字
+     * 用于查看调用的是模拟服务，还是真实服务
+     * @return
+     */
+    default short getNumber(){
+        return 1;
+    }
 }
