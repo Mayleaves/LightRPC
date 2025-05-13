@@ -24,7 +24,7 @@ public class ServiceProxy implements InvocationHandler {
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // 指定序列化器
+        // 指定序列化器：硬编码
         Serializer serializer = new JdkSerializer();
 
         // 构造请求

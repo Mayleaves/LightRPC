@@ -19,6 +19,6 @@ public interface UserService {
      * @return
      */
     default short getNumber(){
-        return 1;
+        return (short)12345;
     }
 }

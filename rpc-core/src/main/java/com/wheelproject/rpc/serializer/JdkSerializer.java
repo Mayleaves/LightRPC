@@ -25,10 +25,11 @@ public class JdkSerializer implements Serializer {
 
     /**
      * 反序列化
+     *
      * @param bytes
      * @param type
-     * @return
      * @param <T>
+     * @return
      * @throws IOException
      */
     @Override

@@ -1,10 +1,12 @@
 package com.wheelproject.rpc.server;
 
+import com.wheelproject.rpc.RpcApplication;
 import com.wheelproject.rpc.model.RpcRequest;
 import com.wheelproject.rpc.model.RpcResponse;
 import com.wheelproject.rpc.registry.LocalRegistry;
 import com.wheelproject.rpc.serializer.JdkSerializer;
 import com.wheelproject.rpc.serializer.Serializer;
+import com.wheelproject.rpc.serializer.SerializerFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,7 +27,11 @@ import java.lang.reflect.Method;
 
 public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    private final Serializer serializer = new JdkSerializer();
+    // 指定序列化器
+    // 1. 硬编码
+//    final Serializer serializer = new JdkSerializer();
+    // 2. 自定义实现 SPI
+    final Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {

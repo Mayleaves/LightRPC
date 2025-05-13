@@ -1,0 +1,4 @@
+jdk=com.wheelproject.rpc.serializer.JdkSerializer
+json=com.wheelproject.rpc.serializer.JsonSerializer
+hessian=com.wheelproject.rpc.serializer.HessianSerializer
+kryo=com.wheelproject.rpc.serializer.KryoSerializer
