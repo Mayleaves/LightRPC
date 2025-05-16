@@ -5,7 +5,6 @@ import com.wheelproject.rpc.serializer.SerializerKeys;
 
 /**
  * RPC 框架全局配置
- *
  */
 @Data
 public class RpcConfig {
@@ -40,4 +39,8 @@ public class RpcConfig {
      */
     private String serializer = SerializerKeys.JDK;
 
+    /**
+     * 注册中心配置
+     */
+    private RegistryConfig registryConfig = new RegistryConfig();
 }

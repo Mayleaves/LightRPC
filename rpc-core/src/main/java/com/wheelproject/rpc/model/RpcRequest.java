@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * RPC 请求
- *
+ * RPC 请求：消费者 → 提供者
  */
 @Data
 @Builder

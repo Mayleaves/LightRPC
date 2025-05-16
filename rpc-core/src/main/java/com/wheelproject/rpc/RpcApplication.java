@@ -4,6 +4,9 @@ import com.wheelproject.rpc.config.RpcConfig;
 import com.wheelproject.rpc.constant.RpcConstant;
 import com.wheelproject.rpc.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
+import com.wheelproject.rpc.config.RegistryConfig;
+import com.wheelproject.rpc.registry.Registry;
+import com.wheelproject.rpc.registry.RegistryFactory;
 
 /**
  * RPC 框架应用
@@ -24,6 +27,12 @@ public class RpcApplication {
     public static void init(RpcConfig newRpcConfig) {
         rpcConfig = newRpcConfig;
         log.info("rpc init, config = {}", newRpcConfig.toString());
+
+        //注册中心初始化
+        RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
+        Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
+        registry.init(registryConfig);
+        log.info("registry init,config = {}",registryConfig);
     }
 
     /**
