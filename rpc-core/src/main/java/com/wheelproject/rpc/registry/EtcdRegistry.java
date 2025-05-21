@@ -35,6 +35,11 @@ public class EtcdRegistry implements Registry {
     private KV kvClient;
 
     /**
+     * 过期字典：本机注册的节点 key 集合（用于维护续期）
+     */
+    private final Set<String> localRegisterNodeKeySet = new HashSet<>();
+
+    /**
      * 根节点
      */
     private static final String ETCD_ROOT_PATH = "/rpc/";
@@ -46,6 +51,7 @@ public class EtcdRegistry implements Registry {
                 .connectTimeout(Duration.ofMillis(registryConfig.getTimeout()))
                 .build();
         kvClient = client.getKVClient();
+        heartBeat();
     }
 
     @Override
@@ -64,12 +70,17 @@ public class EtcdRegistry implements Registry {
         // 将键值对与租约关联起来，并设置过期时间
         PutOption putOption = PutOption.builder().withLeaseId(leaseId).build();
         kvClient.put(key, value, putOption).get();
+
+        // 添加节点信息到本地缓存
+        localRegisterNodeKeySet.add(registerKey);
     }
 
     @Override
     public void unRegister(ServiceMetaInfo serviceMetaInfo) {
         String registerKey = ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey();
         kvClient.delete(ByteSequence.from(registerKey, StandardCharsets.UTF_8));
+        // 将节点信息从本地缓存移除
+        localRegisterNodeKeySet.remove(registerKey);
     }
 
     @Override
@@ -98,6 +109,39 @@ public class EtcdRegistry implements Registry {
     }
 
     @Override
+    public void heartBeat() {
+        // 定时任务：10 秒续签一次
+        CronUtil.schedule("*/10 * * * * *", new Task() {
+            @Override
+            public void execute() {
+                // 遍历本地缓存的所有 key
+                for (String key : localRegisterNodeKeySet) {
+                    // 检查键是否过期
+                    try {
+                        List<KeyValue> keyValues = kvClient.get(ByteSequence.from(key, StandardCharsets.UTF_8))
+                                .get()
+                                .getKvs();
+                        // 若该节点已过期，需要重启节点才能重新注册
+                        if (CollUtil.isEmpty(keyValues)) {
+                            continue;
+                        }
+                        // 若节点未过期，重新注册（续期）
+                        KeyValue keyValue = keyValues.get(0);
+                        String value = keyValue.getValue().toString(StandardCharsets.UTF_8);
+                        ServiceMetaInfo serviceMetaInfo = JSONUtil.toBean(value, ServiceMetaInfo.class);
+                        register(serviceMetaInfo);
+                    } catch (Exception e) {
+                        throw new RuntimeException(key + "续期失败", e);
+                    }
+                }
+            }
+        });
+        // 支持秒级别定时任务
+        CronUtil.setMatchSecond(true);
+        CronUtil.start();
+    }
+
+    @Override
     public void destroy() {
         System.out.println("当前节点下线");
         // 释放资源
@@ -109,30 +153,3 @@ public class EtcdRegistry implements Registry {
         }
     }
 }
-
-
-//public class EtcdRegistry {
-//    // 能在 etcdkeeper 上显示 test_key > test_value
-//    public static void main(String[] args) throws ExecutionException, InterruptedException {
-//        // create client using endpoints
-//        Client client = Client.builder().endpoints("http://localhost:2379")
-//                .build();
-//
-//        KV kvClient = client.getKVClient();
-//        ByteSequence key = ByteSequence.from("test_key".getBytes());
-//        ByteSequence value = ByteSequence.from("test_value".getBytes());
-//
-//        // put the key-value
-//        kvClient.put(key, value).get();
-//
-//        // get the CompletableFuture
-//        CompletableFuture<GetResponse> getFuture = kvClient.get(key);
-//
-//        // get the value from CompletableFuture
-//        GetResponse response = getFuture.get();
-//
-//        // delete the key
-////        kvClient.delete(key).get();
-//    }
-//}
-
