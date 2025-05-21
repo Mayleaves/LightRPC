@@ -20,7 +20,7 @@ public class RpcApplication {
 
     /**
      * 框架初始化，支持传入自定义配置
-     * @param newRpcConfig
+     * @param newRpcConfig 带参数的静态初始化方法
      */
     public static void init(RpcConfig newRpcConfig) {
         rpcConfig = newRpcConfig;
@@ -50,8 +50,7 @@ public class RpcApplication {
 
     /**
      * 获取配置
-     *
-     * @return
+     * @return RPC 的配置
      */
     public static RpcConfig getRpcConfig() {
         // 第一次检查：如果实例已经创建，直接返回
