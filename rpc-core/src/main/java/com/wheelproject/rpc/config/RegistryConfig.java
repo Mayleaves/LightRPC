@@ -1,5 +1,6 @@
 package com.wheelproject.rpc.config;
 
+import com.wheelproject.rpc.registry.RegistryKeys;
 import lombok.Data;
 
 /**
@@ -11,7 +12,7 @@ public class RegistryConfig {
     /**
      * 注册中心类别
      */
-    private String registry = "etcd";
+    private String registry = RegistryKeys.ETCD;
 
     /**
      * 注册中心地址

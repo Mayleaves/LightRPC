@@ -1,1 +1,2 @@
 etcd=com.wheelproject.rpc.registry.EtcdRegistry
+zookeeper=com.wheelproject.rpc.registry.ZooKeeperRegistry

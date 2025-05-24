@@ -18,7 +18,7 @@ public class ServiceMetaInfo {
     /**
      * 服务版本号
      */
-    private String serviceVersion = "1.0";
+    private String serviceVersion = RpcConstant.DEFAULT_SERVICE_VERSION;
 
     /**
      * 服务地址
