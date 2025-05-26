@@ -15,9 +15,11 @@ import com.wheelproject.rpc.serializer.SerializerFactory;
 import com.wheelproject.rpc.server.httpServer.HttpServer;
 import io.etcd.jetcd.api.Role;
 import io.etcd.jetcd.api.User;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetServer;
+import io.vertx.core.parsetools.RecordParser;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
@@ -50,23 +52,21 @@ public class VertxTcpServer implements HttpServer {
         // 处理请求
 //         server.connectHandler(new VertxTcpServerHandler());
         server.connectHandler(socket -> {
-            socket.handler(buffer -> {
-                String testMessage = "Hello, server!Hello, server!Hello, server!Hello, server!";
-                int messageLength = testMessage.getBytes().length;
-                if (buffer.getBytes().length < messageLength) {
-                    System.out.println("半包，length = " + buffer.getBytes().length);
-                    return;
-                }
-                if (buffer.getBytes().length > messageLength) {
-                    System.out.println("粘包，length = " + buffer.getBytes().length);
-                    return;
-                }
-                String str = new String(buffer.getBytes(0, messageLength));
-                System.out.println(str);
-                if (testMessage.equals(str)) {
-                    System.out.println("good");
+            String testMessage = "Hello, server!Hello, server!Hello, server!Hello, server!";
+            int messageLength = testMessage.getBytes().length;
+            // 为 parser 指定每次读取固定值长度的内容
+            RecordParser parser = RecordParser.newFixed(messageLength);
+            parser.setOutput(new Handler<Buffer>() {
+                @Override
+                public void handle(Buffer buffer) {
+                    String str = new String(buffer.getBytes());
+                    System.out.println(str);
+                    if (testMessage.equals(str)) {
+                        System.out.println("good");
+                    }
                 }
             });
+            socket.handler(parser);
         });
 
         // 启动 TCP 服务器并监听指定端口
