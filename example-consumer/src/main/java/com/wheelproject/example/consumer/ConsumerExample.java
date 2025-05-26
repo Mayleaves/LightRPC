@@ -48,7 +48,7 @@ public class ConsumerExample {
         // 通过 Mock，调用模拟服务
         // 注意还是要启动提供者的 ProviderExample
         long number = userService.getNumber();
-        System.out.println(number);
+        System.out.println(number);  // 12345
     }
     private static void callServiceAndPrint(UserService userService, User user) {
         User result = userService.getUser(user);

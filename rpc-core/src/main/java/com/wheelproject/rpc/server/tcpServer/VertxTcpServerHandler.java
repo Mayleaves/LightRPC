@@ -5,6 +5,7 @@ import com.wheelproject.rpc.model.RpcResponse;
 import com.wheelproject.rpc.protocol.codec.ProtocolMessageDecoder;
 import com.wheelproject.rpc.protocol.codec.ProtocolMessageEncoder;
 import com.wheelproject.rpc.protocol.common.ProtocolMessage;
+import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageStatusEnum;
 import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageTypeEnum;
 import com.wheelproject.rpc.registry.LocalRegistry;
 import io.vertx.core.Handler;
@@ -22,12 +23,11 @@ public class VertxTcpServerHandler implements Handler<NetSocket> {
     /**
      * 处理请求
      *
-     * @param netSocket the event to handle
+     * @param socket the event to handle
      */
     @Override
-    public void handle(NetSocket netSocket) {
-        //处理连接
-        netSocket.handler(buffer -> {
+    public void handle(NetSocket socket) {
+        VertxTcpBufferHandlerWrapper bufferHandlerWrapper = new VertxTcpBufferHandlerWrapper(buffer -> {
             // 接受请求，解码
             ProtocolMessage<RpcRequest> protocolMessage;
             try {
@@ -36,6 +36,7 @@ public class VertxTcpServerHandler implements Handler<NetSocket> {
                 throw new RuntimeException("协议消息解码错误");
             }
             RpcRequest rpcRequest = protocolMessage.getBody();
+            ProtocolMessage.Header header = protocolMessage.getHeader();
 
             // 处理请求
             // 构造响应结果对象
@@ -54,17 +55,18 @@ public class VertxTcpServerHandler implements Handler<NetSocket> {
                 rpcResponse.setMessage(e.getMessage());
                 rpcResponse.setException(e);
             }
+
             // 发送响应，编码
-            ProtocolMessage.Header header = protocolMessage.getHeader();
             header.setType((byte) ProtocolMessageTypeEnum.RESPONSE.getKey());
+            header.setStatus((byte) ProtocolMessageStatusEnum.OK.getValue());
             ProtocolMessage<RpcResponse> responseProtocolMessage = new ProtocolMessage<>(header, rpcResponse);
             try {
                 Buffer encode = ProtocolMessageEncoder.encode(responseProtocolMessage);
-                netSocket.write(encode);
+                socket.write(encode);
             } catch (IOException e) {
                 throw new RuntimeException("协议消息编码错误");
             }
         });
+        socket.handler(bufferHandlerWrapper);
     }
-
 }
