@@ -1,4 +1,4 @@
-package com.wheelproject.rpc.server;
+package com.wheelproject.rpc.server.httpServer;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

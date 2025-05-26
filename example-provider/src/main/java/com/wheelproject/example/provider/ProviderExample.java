@@ -3,7 +3,9 @@ package com.wheelproject.example.provider;
 import com.wheelproject.example.common.service.UserService;
 import com.wheelproject.rpc.RpcApplication;
 import com.wheelproject.rpc.registry.LocalRegistry;
-import com.wheelproject.rpc.server.NettyHttpServer;
+import com.wheelproject.rpc.server.httpServer.VertxHttpServer;
+import com.wheelproject.rpc.server.tcpServer.VertxTcpServer;
+import com.wheelproject.rpc.server.httpServer.NettyHttpServer;
 import com.wheelproject.rpc.config.RpcConfig;
 import com.wheelproject.rpc.config.RegistryConfig;
 import com.wheelproject.rpc.registry.Registry;
@@ -19,7 +21,7 @@ public class ProviderExample {
         // PRC 初始化框架
         RpcApplication.init();
 
-        // 简易注册服务
+        // 注册服务
         String serviceName = UserService.class.getName();
         LocalRegistry.register(serviceName, UserServiceImpl.class);
 
@@ -29,19 +31,25 @@ public class ProviderExample {
         Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
         serviceMetaInfo.setServiceName(serviceName);
-
         serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
         serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
-        // 以下注释的两句可以不写，因为重写了 getServiceAddress 方法。但是前面两句必须写，否则：http://null:null。
-//        serviceMetaInfo.setServiceAddress("http://" + rpcConfig.getServerHost() + ":" + rpcConfig.getServerPort());
-//        serviceMetaInfo.setServiceAddress(rpcConfig.getServerHost() + ":" + rpcConfig.getServerPort());
         try {
             registry.register(serviceMetaInfo);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         // 启动 web 服务
-        NettyHttpServer httpServer = new NettyHttpServer();
-        httpServer.run(RpcApplication.getRpcConfig().getServerPort());
+        // 1. Vertx
+        // 1.1 Http
+//        VertxHttpServer httpServer = new VertxHttpServer();
+//        httpServer.run(RpcApplication.getRpcConfig().getServerPort());
+        // 1.2 TCP
+        VertxTcpServer vertxTcpServer = new VertxTcpServer();
+        vertxTcpServer.run(RpcApplication.getRpcConfig().getServerPort());
+        // 2. Netty
+        // 2.1 Http
+//        NettyHttpServer httpServer = new NettyHttpServer();
+//        httpServer.run(RpcApplication.getRpcConfig().getServerPort());
     }
 }

@@ -1,4 +1,4 @@
-package com.wheelproject.rpc.server;
+package com.wheelproject.rpc.server.httpServer;
 
 import com.wheelproject.rpc.RpcApplication;
 import com.wheelproject.rpc.model.RpcRequest;

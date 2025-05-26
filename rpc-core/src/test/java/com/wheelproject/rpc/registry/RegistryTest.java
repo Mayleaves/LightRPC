@@ -13,12 +13,14 @@ import java.util.List;
  */
 public class RegistryTest {
 
-    final Registry registry = new EtcdRegistry();
+//    final Registry registry = new EtcdRegistry();
+    final Registry registry = new ZooKeeperRegistry();
 
     @Before
     public void init() {
         RegistryConfig registryConfig = new RegistryConfig();
-        registryConfig.setAddress("http://localhost:2379");
+//        registryConfig.setAddress("http://localhost:2379");
+        registryConfig.setAddress("localhost:2181");
         registry.init(registryConfig);
     }
 

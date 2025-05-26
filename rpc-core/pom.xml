@@ -112,6 +112,7 @@
       <artifactId>curator-x-discovery</artifactId>
       <version>5.6.0</version>
     </dependency>
+
   </dependencies>
 
   <build>
