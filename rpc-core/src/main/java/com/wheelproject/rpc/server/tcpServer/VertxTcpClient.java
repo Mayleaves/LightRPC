@@ -1,6 +1,7 @@
 package com.wheelproject.rpc.server.tcpServer;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 
 /**
  * Vertx TCP 客户端
@@ -17,9 +18,13 @@ public class VertxTcpClient {
 //                socket.write("Hello, server!");
                 // 测试半包、粘包
                 for (int i = 0; i < 1000; i++) {
-                    socket.write("Hello, server!Hello, server!Hello, server!Hello, server!");
+                    Buffer buffer = Buffer.buffer();
+                    String str = "Hello, server!Hello, server!Hello, server!Hello, server!";
+                    buffer.appendInt(0);
+                    buffer.appendInt(str.getBytes().length);
+                    buffer.appendBytes(str.getBytes());
+                    socket.write(buffer);
                 }
-
                 // 接收响应
                 socket.handler(buffer -> {
                     System.out.println("Received response from server:" + buffer.toString());

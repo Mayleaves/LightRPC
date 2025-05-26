@@ -34,12 +34,6 @@ import java.nio.charset.StandardCharsets; // 标准字符集
  */
 @Slf4j
 public class VertxTcpServer implements HttpServer {
-    private byte[] handleRequest(byte[] requestData) {
-        // 在这里编写处理请求的逻辑，根据 requestData 构造响应数据并返回
-        // 这里只是一个示例，实际逻辑需要根据具体的业务需求来实现
-        return "Hello, client!".getBytes();
-    }
-
 
     @Override
     public void run(int port) {
@@ -52,17 +46,29 @@ public class VertxTcpServer implements HttpServer {
         // 处理请求
 //         server.connectHandler(new VertxTcpServerHandler());
         server.connectHandler(socket -> {
-            String testMessage = "Hello, server!Hello, server!Hello, server!Hello, server!";
-            int messageLength = testMessage.getBytes().length;
             // 为 parser 指定每次读取固定值长度的内容
-            RecordParser parser = RecordParser.newFixed(messageLength);
+            RecordParser parser = RecordParser.newFixed(8);
             parser.setOutput(new Handler<Buffer>() {
+                // 初始化
+                int size = -1;
+                // 一次完整的读取（头+体）
+                Buffer resultBuffer = Buffer.buffer();
                 @Override
                 public void handle(Buffer buffer) {
-                    String str = new String(buffer.getBytes());
-                    System.out.println(str);
-                    if (testMessage.equals(str)) {
-                        System.out.println("good");
+                    if (-1 == size) {
+                        // 读取消息体长度
+                        size = buffer.getInt(4);
+                        parser.fixedSizeMode(size);
+                        // 写入请求头信息到结果
+                        resultBuffer.appendBuffer(buffer);
+                    } else {
+                        // 写入消息体到结果
+                        resultBuffer.appendBuffer(buffer);
+                        System.out.println(resultBuffer.toString());
+                        // 重置一轮
+                        parser.fixedSizeMode(8);
+                        size = -1;
+                        resultBuffer = Buffer.buffer();
                     }
                 }
             });
