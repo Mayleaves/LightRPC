@@ -1,5 +1,6 @@
 package com.wheelproject.rpc.config;
 
+import com.wheelproject.rpc.fault.retry.RetryStrategyKeys;
 import com.wheelproject.rpc.loadbalancer.LoadBalancerKeys;
 import lombok.Data;
 import com.wheelproject.rpc.serializer.SerializerKeys;
@@ -50,4 +51,8 @@ public class RpcConfig {
      */
     private String loadBalancer = LoadBalancerKeys.ROUND_ROBIN;
 
+    /**
+     * 重试策略
+     */
+    private String retryStrategy = RetryStrategyKeys.NO;
 }

@@ -1,0 +1,2 @@
+no=com.wheelproject.rpc.fault.retry.NoRetryStrategy
+fixedInterval=com.wheelproject.rpc.fault.retry.FixedIntervalRetryStrategy

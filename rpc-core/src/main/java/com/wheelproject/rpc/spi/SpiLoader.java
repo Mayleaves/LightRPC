@@ -61,7 +61,6 @@ public class SpiLoader {
      */
     public static <T> T getInstance(Class<?> tClass, String key) {
         String tClassName = tClass.getName();
-
         Map<String, Class<?>> keyClassMap = loaderMap.get(tClassName);
         if (keyClassMap == null) {
             throw new RuntimeException(String.format("SpiLoader未加载 %s 类型...", tClassName));

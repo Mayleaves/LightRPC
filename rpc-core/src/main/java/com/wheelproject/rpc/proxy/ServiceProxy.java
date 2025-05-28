@@ -1,5 +1,8 @@
 package com.wheelproject.rpc.proxy;
 
+import com.wheelproject.rpc.fault.retry.NoRetryStrategy;
+import com.wheelproject.rpc.fault.retry.RetryStrategy;
+import com.wheelproject.rpc.fault.retry.RetryStrategyFactory;
 import com.wheelproject.rpc.loadbalancer.LoadBalancer;
 import com.wheelproject.rpc.loadbalancer.LoadBalancerFactory;
 import com.wheelproject.rpc.model.RpcRequest;
@@ -119,20 +122,17 @@ public class ServiceProxy implements InvocationHandler {
                     selectedServiceMetaInfo.getServicePort(),
                     rpcRequest.getMethodName());
 
+            // 重试机制
+            RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
+
             // 1. 发送 Vertx/Netty HTTP 请求
-            // 序列化
-            byte[] bodyBytes = serializer.serialize(rpcRequest);
-            try (HttpResponse httpResponse = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
-                    .body(bodyBytes)
-                    .execute()) {
-                byte[] result = httpResponse.bodyBytes();
-                // 反序列化
-                RpcResponse rpcResponse = serializer.deserialize(result, RpcResponse.class);
-                return rpcResponse.getData();
-            }
+//            RpcResponse rpcResponse = retryStrategy.doRetry(()->
+//                    doHttpRequest(serializer, rpcRequest, selectedServiceMetaInfo)
+//            );
             // 2. 发送 Vertx TCP 请求
-//            RpcResponse rpcResponse = VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo);
-//            return rpcResponse.getData();
+            RpcResponse rpcResponse = retryStrategy.doRetry(() ->
+                    VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+            );
             // 2. 发送 Netty TCP 请求
             // 未完成
             // 创建客户端并发送请求
@@ -153,10 +153,32 @@ public class ServiceProxy implements InvocationHandler {
 //
 //            RpcResponse rpcResponse = (RpcResponse)tcpClient.sendRequest(protocolMessage);
 //            tcpClient.shutdown();
-//            return rpcResponse.getData();
 
+            return rpcResponse.getData();
         } catch (Exception e) {
             throw new RuntimeException("调用失败");
+        }
+    }
+
+    /**
+     * 发送 Vertx/Netty HTTP 请求
+     * @param serializer
+     * @param rpcRequest
+     * @param selectedServiceMetaInfo
+     * @return
+     * @throws IOException
+     */
+    private static RpcResponse doHttpRequest(Serializer serializer, RpcRequest rpcRequest, ServiceMetaInfo selectedServiceMetaInfo) throws IOException {
+        // 序列化
+        byte[] bodyBytes = serializer.serialize(rpcRequest);
+        // 发送 HTTP 请求
+        try (HttpResponse httpResponse = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
+                .body(bodyBytes)
+                .execute()) {
+            byte[] result = httpResponse.bodyBytes();
+            // 反序列化
+            RpcResponse rpcResponse = serializer.deserialize(result, RpcResponse.class);
+            return rpcResponse;
         }
     }
 }

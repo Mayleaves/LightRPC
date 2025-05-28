@@ -45,6 +45,9 @@ public class VertxTcpClient {
                 result -> {
                     if (!result.succeeded()) {
                         System.err.println("Failed to connect to TCP server");
+                        // 连接失败时，主动触发异常
+                        // 不写这一句，会导致没有异常抛出，外层的 RetryStrategy 无法感知失败，不会触发重试。
+                        responseFuture.completeExceptionally(new RuntimeException("连接失败："+ result.cause()));
                         return;
                     }
                     System.out.println("Connected to TCP server");
@@ -84,7 +87,6 @@ public class VertxTcpClient {
                             }
                     );
                     socket.handler(bufferHandlerWrapper);
-
                 });
 
         RpcResponse rpcResponse = responseFuture.get();
