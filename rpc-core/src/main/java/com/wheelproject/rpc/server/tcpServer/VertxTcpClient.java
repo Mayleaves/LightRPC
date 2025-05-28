@@ -35,6 +35,8 @@ public class VertxTcpClient {
      */
     public static RpcResponse doRequest(RpcRequest rpcRequest, ServiceMetaInfo serviceMetaInfo)
             throws InterruptedException, ExecutionException {
+        System.out.println("Calling service at " + serviceMetaInfo.getServiceAddress());
+
         // 发送 TCP 请求
         Vertx vertx = Vertx.vertx();
         NetClient netClient = vertx.createNetClient();

@@ -1,7 +1,7 @@
 package com.wheelproject.rpc.registry;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.cron.CronUtil;
+import cn.hutool.cron.CronUtil;  // 单例模式
 import cn.hutool.cron.task.Task;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.core.collection.ConcurrentHashSet;
@@ -95,6 +95,7 @@ public class EtcdRegistry implements Registry {
      */
     @Override
     public List<ServiceMetaInfo> serviceDiscovery(String serviceKey) {
+
         // 优先从缓存获取服务
         List<ServiceMetaInfo> cachedServiceMetaInfoList = registryServiceCache.readCache();
         if (cachedServiceMetaInfoList != null) {

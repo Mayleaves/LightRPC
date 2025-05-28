@@ -1,5 +1,7 @@
 package com.wheelproject.rpc.proxy;
 
+import com.wheelproject.rpc.loadbalancer.LoadBalancer;
+import com.wheelproject.rpc.loadbalancer.LoadBalancerFactory;
 import com.wheelproject.rpc.model.RpcRequest;
 import com.wheelproject.rpc.model.RpcResponse;
 import com.wheelproject.rpc.serializer.Serializer;
@@ -19,6 +21,7 @@ import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageTypeEnum;
 import com.wheelproject.rpc.protocol.codec.ProtocolMessageEncoder;
 import com.wheelproject.rpc.protocol.codec.ProtocolMessageDecoder;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -35,9 +38,12 @@ import io.vertx.core.Vertx;
 import io.vertx.core.net.NetClient;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import cn.hutool.core.util.IdUtil;
 import io.vertx.core.buffer.Buffer;
+
+import com.wheelproject.rpc.server.tcpServer.NettyTcpClient;
 
 /**
  * 服务代理（JDK 动态代理）
@@ -64,7 +70,8 @@ public class ServiceProxy implements InvocationHandler {
         }
          */
         // 3. 自定义实现 SPI
-        final Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
+        final Serializer serializer = SerializerFactory.
+                getInstance(RpcApplication.getRpcConfig().getSerializer());
 
         // 构造请求
         String serviceName = method.getDeclaringClass().getName();
@@ -87,23 +94,67 @@ public class ServiceProxy implements InvocationHandler {
             if (CollUtil.isEmpty(serviceMetaInfoList)) {
                 throw new RuntimeException("暂无服务地址");
             }
-            // 暂时先取第一个
-            ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
 
-            // 1. 发送 HTTP 请求
-//            // 序列化
-//            byte[] bodyBytes = serializer.serialize(rpcRequest);
-//            try (HttpResponse httpResponse = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
-//                    .body(bodyBytes)
-//                    .execute()) {
-//                byte[] result = httpResponse.bodyBytes();
-//                // 反序列化
-//                RpcResponse rpcResponse = serializer.deserialize(result, RpcResponse.class);
-//                return rpcResponse.getData();
-//            }
-            // 2. 发送 TCP 请求
-            RpcResponse rpcResponse = VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo);
-            return rpcResponse.getData();
+            // 暂时先取第一个
+//            ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
+            // 负载均衡
+            LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancer());
+            // 将调用方法名为（请求路径）作为负载均衡参数
+            HashMap<String, Object> requestParams = new HashMap<>();
+            requestParams.put("methodName", rpcRequest.getMethodName());
+            ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
+
+            // 添加关键日志（在这里打印最终选择的端口）
+            System.out.printf("\n=== 消费者调用信息 ===\n" +
+                            "服务名称: %s\n" +
+                            "可用节点: %s\n" +
+                            "最终选择: %s:%d\n" +
+                            "调用方法: %s\n" +
+                            "====================\n",
+                    serviceName,
+                    serviceMetaInfoList.stream()
+                            .map(info -> info.getServiceHost() + ":" + info.getServicePort())
+                            .collect(Collectors.toList()),
+                    selectedServiceMetaInfo.getServiceHost(),
+                    selectedServiceMetaInfo.getServicePort(),
+                    rpcRequest.getMethodName());
+
+            // 1. 发送 Vertx/Netty HTTP 请求
+            // 序列化
+            byte[] bodyBytes = serializer.serialize(rpcRequest);
+            try (HttpResponse httpResponse = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
+                    .body(bodyBytes)
+                    .execute()) {
+                byte[] result = httpResponse.bodyBytes();
+                // 反序列化
+                RpcResponse rpcResponse = serializer.deserialize(result, RpcResponse.class);
+                return rpcResponse.getData();
+            }
+            // 2. 发送 Vertx TCP 请求
+//            RpcResponse rpcResponse = VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo);
+//            return rpcResponse.getData();
+            // 2. 发送 Netty TCP 请求
+            // 未完成
+            // 创建客户端并发送请求
+//            NettyTcpClient tcpClient = new NettyTcpClient(selectedServiceMetaInfo.getServiceHost(),
+//                    selectedServiceMetaInfo.getServicePort());
+//            tcpClient.start();
+//
+//            ProtocolMessage<RpcRequest> protocolMessage = new ProtocolMessage<>();
+//            ProtocolMessage.Header header = new ProtocolMessage.Header();
+//            header.setMagic(ProtocolConstant.PROTOCOL_MAGIC);
+//            header.setVersion(ProtocolConstant.PROTOCOL_VERSION);
+//            header.setSerializer((byte) ProtocolMessageSerializerEnum.getEnumByValue(RpcApplication.getRpcConfig().getSerializer()).getKey());
+//            header.setType((byte) ProtocolMessageTypeEnum.REQUEST.getKey());
+//            // 生成全局请求 ID
+//            header.setRequestId(IdUtil.getSnowflakeNextId());
+//            protocolMessage.setHeader(header);
+//            protocolMessage.setBody(rpcRequest);
+//
+//            RpcResponse rpcResponse = (RpcResponse)tcpClient.sendRequest(protocolMessage);
+//            tcpClient.shutdown();
+//            return rpcResponse.getData();
+
         } catch (Exception e) {
             throw new RuntimeException("调用失败");
         }
