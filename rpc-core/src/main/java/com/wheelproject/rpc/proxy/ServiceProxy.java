@@ -3,6 +3,8 @@ package com.wheelproject.rpc.proxy;
 import com.wheelproject.rpc.fault.retry.NoRetryStrategy;
 import com.wheelproject.rpc.fault.retry.RetryStrategy;
 import com.wheelproject.rpc.fault.retry.RetryStrategyFactory;
+import com.wheelproject.rpc.fault.tolerant.TolerantStrategy;
+import com.wheelproject.rpc.fault.tolerant.TolerantStrategyFactory;
 import com.wheelproject.rpc.loadbalancer.LoadBalancer;
 import com.wheelproject.rpc.loadbalancer.LoadBalancerFactory;
 import com.wheelproject.rpc.model.RpcRequest;
@@ -122,19 +124,29 @@ public class ServiceProxy implements InvocationHandler {
                     selectedServiceMetaInfo.getServicePort(),
                     rpcRequest.getMethodName());
 
-            // 重试机制
-            RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
 
-            // 1. 发送 Vertx/Netty HTTP 请求
-//            RpcResponse rpcResponse = retryStrategy.doRetry(()->
+            RpcResponse rpcResponse;
+            try{
+                // 重试机制
+                RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
+                // 1. 发送 Vertx/Netty HTTP 请求
+//                rpcResponse = retryStrategy.doRetry(()->
 //                    doHttpRequest(serializer, rpcRequest, selectedServiceMetaInfo)
-//            );
-            // 2. 发送 Vertx TCP 请求
-            RpcResponse rpcResponse = retryStrategy.doRetry(() ->
-                    VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
-            );
-            // 2. 发送 Netty TCP 请求
-            // 未完成
+//                );
+                // 2. 发送 Vertx TCP 请求
+                rpcResponse = retryStrategy.doRetry(() ->
+                        VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+                );
+                // 2. 发送 Netty TCP 请求
+                // 未完成
+
+            } catch (Exception e){
+                // 容错机制
+                TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
+                rpcResponse = tolerantStrategy.doTolerant(null, e);
+            }
+
+
             // 创建客户端并发送请求
 //            NettyTcpClient tcpClient = new NettyTcpClient(selectedServiceMetaInfo.getServiceHost(),
 //                    selectedServiceMetaInfo.getServicePort());

@@ -1,0 +1,4 @@
+failBack=com.wheelproject.rpc.fault.tolerant.FailBackTolerantStrategy
+failFast=com.wheelproject.rpc.fault.tolerant.FailFastTolerantStrategy
+failOver=com.wheelproject.rpc.fault.tolerant.FailOverTolerantStrategy
+failSafe=com.wheelproject.rpc.fault.tolerant.FailSafeTolerantStrategy
