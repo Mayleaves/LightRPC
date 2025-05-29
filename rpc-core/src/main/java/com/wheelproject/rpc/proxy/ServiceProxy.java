@@ -100,8 +100,6 @@ public class ServiceProxy implements InvocationHandler {
                 throw new RuntimeException("暂无服务地址");
             }
 
-            // 暂时先取第一个
-//            ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
             // 负载均衡
             LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancer());
             // 将调用方法名为（请求路径）作为负载均衡参数
@@ -109,34 +107,18 @@ public class ServiceProxy implements InvocationHandler {
             requestParams.put("methodName", rpcRequest.getMethodName());
             ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
 
-            // 添加关键日志（在这里打印最终选择的端口）
-            System.out.printf("\n=== 消费者调用信息 ===\n" +
-                            "服务名称: %s\n" +
-                            "可用节点: %s\n" +
-                            "最终选择: %s:%d\n" +
-                            "调用方法: %s\n" +
-                            "====================\n",
-                    serviceName,
-                    serviceMetaInfoList.stream()
-                            .map(info -> info.getServiceHost() + ":" + info.getServicePort())
-                            .collect(Collectors.toList()),
-                    selectedServiceMetaInfo.getServiceHost(),
-                    selectedServiceMetaInfo.getServicePort(),
-                    rpcRequest.getMethodName());
-
-
             RpcResponse rpcResponse;
             try{
                 // 重试机制
                 RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
                 // 1. 发送 Vertx/Netty HTTP 请求
-//                rpcResponse = retryStrategy.doRetry(()->
-//                    doHttpRequest(serializer, rpcRequest, selectedServiceMetaInfo)
-//                );
-                // 2. 发送 Vertx TCP 请求
-                rpcResponse = retryStrategy.doRetry(() ->
-                        VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+                rpcResponse = retryStrategy.doRetry(()->
+                    doHttpRequest(serializer, rpcRequest, selectedServiceMetaInfo)
                 );
+                // 2. 发送 Vertx TCP 请求
+//                rpcResponse = retryStrategy.doRetry(() ->
+//                        VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+//                );
                 // 2. 发送 Netty TCP 请求
                 // 未完成
 
