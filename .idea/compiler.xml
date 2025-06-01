@@ -20,7 +20,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="example-springboot-consumer" options="-parameters" />
+      <module name="example-springboot-consumer" options="" />
       <module name="example-springboot-provider" options="" />
       <module name="rpc-spring-boot-starter" options="" />
     </option>

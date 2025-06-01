@@ -103,13 +103,17 @@ public class ServiceProxy implements InvocationHandler {
 //                );
                 rpcResponse = retryStrategy.doRetry(() ->
                         // 2.1 发送 Vertx TCP 请求
-//                        VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+                        VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
                         // 2.2 发送 Netty TCP 请求
-                        NettyTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+//                        NettyTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
                 );
             } catch (Exception e){
                 // 容错机制
                 TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
+                System.out.println("method:"+method);
+                System.out.println("rpcRequest:"+rpcRequest);
+                System.out.println("rpcConfig:"+rpcConfig);
+                System.out.println("e:"+e);
                 rpcResponse = tolerantStrategy.doTolerant(null, e);
             }
 

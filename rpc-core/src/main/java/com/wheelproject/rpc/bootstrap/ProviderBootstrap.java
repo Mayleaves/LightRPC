@@ -56,14 +56,14 @@ public class ProviderBootstrap {
 //        VertxHttpServer httpServer = new VertxHttpServer();
 //        httpServer.run(RpcApplication.getRpcConfig().getServerPort());
         // 1.2 TCP
-//        VertxTcpServer vertxTcpServer = new VertxTcpServer();
-//        vertxTcpServer.run(RpcApplication.getRpcConfig().getServerPort());
+        VertxTcpServer vertxTcpServer = new VertxTcpServer();
+        vertxTcpServer.run(RpcApplication.getRpcConfig().getServerPort());
         // 2. Netty
         // 2.1 Http
 //        NettyHttpServer httpServer = new NettyHttpServer();
 //        httpServer.run(RpcApplication.getRpcConfig().getServerPort());
         // 2.2 TCP
-        NettyTcpServer nettyTcpServer = new NettyTcpServer();
-        nettyTcpServer.run(RpcApplication.getRpcConfig().getServerPort());
+//        NettyTcpServer nettyTcpServer = new NettyTcpServer();
+//        nettyTcpServer.run(RpcApplication.getRpcConfig().getServerPort());
     }
 }
