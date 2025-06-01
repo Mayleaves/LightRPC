@@ -63,20 +63,6 @@ public class ServiceProxy implements InvocationHandler {
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // 指定序列化器
-        // 1. 硬编码
-//        Serializer serializer = new JdkSerializer();
-        // 2. 系统实现 SPI
-        /*
-        Serializer serializer = null;
-        ServiceLoader<Serializer> serviceLoader = ServiceLoader.load(Serializer.class);
-        for (Serializer service : serviceLoader) {
-            serializer = service;
-        }
-         */
-        // 3. 自定义实现 SPI
-        final Serializer serializer = SerializerFactory.
-                getInstance(RpcApplication.getRpcConfig().getSerializer());
 
         // 构造请求
         String serviceName = method.getDeclaringClass().getName();
@@ -112,41 +98,20 @@ public class ServiceProxy implements InvocationHandler {
                 // 重试机制
                 RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
                 // 1. 发送 Vertx/Netty HTTP 请求
-                rpcResponse = retryStrategy.doRetry(()->
-                    doHttpRequest(serializer, rpcRequest, selectedServiceMetaInfo)
-                );
-                // 2. 发送 Vertx TCP 请求
-//                rpcResponse = retryStrategy.doRetry(() ->
-//                        VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+//                rpcResponse = retryStrategy.doRetry(()->
+//                    doHttpRequest(rpcRequest, selectedServiceMetaInfo)
 //                );
-                // 2. 发送 Netty TCP 请求
-                // 未完成
-
+                rpcResponse = retryStrategy.doRetry(() ->
+                        // 2.1 发送 Vertx TCP 请求
+//                        VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+                        // 2.2 发送 Netty TCP 请求
+                        NettyTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+                );
             } catch (Exception e){
                 // 容错机制
                 TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
                 rpcResponse = tolerantStrategy.doTolerant(null, e);
             }
-
-
-            // 创建客户端并发送请求
-//            NettyTcpClient tcpClient = new NettyTcpClient(selectedServiceMetaInfo.getServiceHost(),
-//                    selectedServiceMetaInfo.getServicePort());
-//            tcpClient.start();
-//
-//            ProtocolMessage<RpcRequest> protocolMessage = new ProtocolMessage<>();
-//            ProtocolMessage.Header header = new ProtocolMessage.Header();
-//            header.setMagic(ProtocolConstant.PROTOCOL_MAGIC);
-//            header.setVersion(ProtocolConstant.PROTOCOL_VERSION);
-//            header.setSerializer((byte) ProtocolMessageSerializerEnum.getEnumByValue(RpcApplication.getRpcConfig().getSerializer()).getKey());
-//            header.setType((byte) ProtocolMessageTypeEnum.REQUEST.getKey());
-//            // 生成全局请求 ID
-//            header.setRequestId(IdUtil.getSnowflakeNextId());
-//            protocolMessage.setHeader(header);
-//            protocolMessage.setBody(rpcRequest);
-//
-//            RpcResponse rpcResponse = (RpcResponse)tcpClient.sendRequest(protocolMessage);
-//            tcpClient.shutdown();
 
             return rpcResponse.getData();
         } catch (Exception e) {
@@ -156,13 +121,15 @@ public class ServiceProxy implements InvocationHandler {
 
     /**
      * 发送 Vertx/Netty HTTP 请求
-     * @param serializer
      * @param rpcRequest
      * @param selectedServiceMetaInfo
      * @return
      * @throws IOException
      */
-    private static RpcResponse doHttpRequest(Serializer serializer, RpcRequest rpcRequest, ServiceMetaInfo selectedServiceMetaInfo) throws IOException {
+    private static RpcResponse doHttpRequest(RpcRequest rpcRequest, ServiceMetaInfo selectedServiceMetaInfo) throws IOException {
+        // 自定义实现 SPI
+        final Serializer serializer = SerializerFactory.
+                getInstance(RpcApplication.getRpcConfig().getSerializer());
         // 序列化
         byte[] bodyBytes = serializer.serialize(rpcRequest);
         // 发送 HTTP 请求

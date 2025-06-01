@@ -10,6 +10,7 @@ import com.wheelproject.rpc.registry.Registry;
 import com.wheelproject.rpc.registry.RegistryFactory;
 import com.wheelproject.rpc.server.httpServer.NettyHttpServer;
 import com.wheelproject.rpc.server.httpServer.VertxHttpServer;
+import com.wheelproject.rpc.server.tcpServer.NettyTcpServer;
 import com.wheelproject.rpc.server.tcpServer.VertxTcpServer;
 
 import java.util.List;
@@ -59,10 +60,10 @@ public class ProviderBootstrap {
 //        vertxTcpServer.run(RpcApplication.getRpcConfig().getServerPort());
         // 2. Netty
         // 2.1 Http
-        NettyHttpServer httpServer = new NettyHttpServer();
-        httpServer.run(RpcApplication.getRpcConfig().getServerPort());
-        // 2.2 TCP 未完成
-//        NettyTcpServer nettyTcpServer = new NettyTcpServer();
-//        nettyTcpServer.run(RpcApplication.getRpcConfig().getServerPort());
+//        NettyHttpServer httpServer = new NettyHttpServer();
+//        httpServer.run(RpcApplication.getRpcConfig().getServerPort());
+        // 2.2 TCP
+        NettyTcpServer nettyTcpServer = new NettyTcpServer();
+        nettyTcpServer.run(RpcApplication.getRpcConfig().getServerPort());
     }
 }

@@ -40,7 +40,7 @@ public class NettyHttpServer implements HttpServer {
 
         channelFuture.addListener((ChannelFutureListener) channelFuture1 -> {  // new ChannelFutureListener() 匿名类 → Lambda 表达式
             if (channelFuture1.isSuccess()) {
-                System.out.println("Listening now... port:" + port);  // 绑定成功
+                System.out.println("Netty listening now... port:" + port);  // 绑定成功
             } else {
                 System.out.println("Sorry, no listening... >_<");  // 绑定失败
                 channelFuture1.cause().printStackTrace();  // 打印出绑定失败的原因

@@ -8,11 +8,21 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="rpc-easy" />
+        <module name="example-springboot-provider" />
+        <module name="rpc-spring-boot-starter" />
+        <module name="example-springboot-consumer" />
         <module name="example-provider" />
         <module name="example-common" />
         <module name="example-consumer" />
         <module name="rpc-core" />
       </profile>
     </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="example-springboot-consumer" options="-parameters" />
+      <module name="example-springboot-provider" options="" />
+      <module name="rpc-spring-boot-starter" options="" />
+    </option>
   </component>
 </project>
