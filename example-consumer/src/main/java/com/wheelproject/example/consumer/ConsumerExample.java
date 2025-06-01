@@ -1,9 +1,7 @@
 package com.wheelproject.example.consumer;
 
 import com.wheelproject.rpc.bootstrap.ConsumerBootstrap;
-import com.wheelproject.rpc.config.RpcConfig;
 import com.wheelproject.rpc.proxy.ServiceProxyFactory;
-import com.wheelproject.rpc.utils.ConfigUtils;
 import com.wheelproject.example.common.model.User;
 import com.wheelproject.example.common.service.UserService;
 

@@ -16,8 +16,8 @@ public class EasyProviderExample {
         LocalRegistry.register(UserService.class.getName(), UserServiceImpl.class);
 
         // 启动 web 服务
-//        HttpServer httpServer = new VertxHttpServer();  // 将 pom.xml 中的 rpc-easy 才可以注释运行
+//        HttpServer httpServer = new VertxHttpServer();  // pom.xml 中有 rpc-easy 才可以运行
 //        httpServer.doStart(8080);
-//        httpServer.doStart(RpcApplication.getRpcConfig().getServerPort());  // 将 pom.xml 中的 rpc-easy 才可以注释运行
+//        httpServer.doStart(RpcApplication.getRpcConfig().getServerPort());  // pom.xml 中有 rpc-easy 才可以运行
     }
 }

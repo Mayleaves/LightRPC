@@ -24,14 +24,9 @@ import java.util.concurrent.ExecutionException;
  * Vertx TCP 客户端
  */
 public class VertxTcpClient {
+
     /**
      * 发送请求
-     *
-     * @param rpcRequest
-     * @param serviceMetaInfo
-     * @return
-     * @throws InterruptedException
-     * @throws ExecutionException
      */
     public static RpcResponse doRequest(RpcRequest rpcRequest, ServiceMetaInfo serviceMetaInfo)
             throws InterruptedException, ExecutionException {

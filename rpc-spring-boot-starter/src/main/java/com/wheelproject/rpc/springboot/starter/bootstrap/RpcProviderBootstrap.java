@@ -21,10 +21,6 @@ public class RpcProviderBootstrap implements BeanPostProcessor {
     /**
      * Bean 初始化后执行，注册服务
      *
-     * @param bean
-     * @param beanName
-     * @return
-     * @throws BeansException
      */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {

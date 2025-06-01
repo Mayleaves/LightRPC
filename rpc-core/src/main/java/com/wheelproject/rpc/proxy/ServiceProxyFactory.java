@@ -1,6 +1,5 @@
 package com.wheelproject.rpc.proxy;
 
-import com.wheelproject.rpc.RpcApplication;
 import java.lang.reflect.Proxy;
 
 

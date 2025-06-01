@@ -2,7 +2,6 @@ package com.wheelproject.rpc.serializer;
 
 import com.wheelproject.rpc.spi.SpiLoader;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,12 +31,16 @@ public class SerializerFactory {
     /**
      * 默认序列化器
      */
+    // 1. 硬编码
 //    private static final Serializer DEFAULT_SERIALIZER = KEY_SERIALIZER_MAP.get("jdk");
+    // 2. 指定序列化器对象
     private static final Serializer DEFAULT_SERIALIZER = new JdkSerializer();
 
     /**
      * 获取序列化器实列
      */
+    // 1. 硬编码
 //    public static Serializer getInstance(String key){return KEY_SERIALIZER_MAP.getOrDefault(key, DEFAULT_SERIALIZER);}
+    // 2. 指定序列化器对象
     public static Serializer getInstance(String key){return SpiLoader.getInstance(Serializer.class,key);}
 }

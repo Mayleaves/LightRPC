@@ -2,10 +2,6 @@ package com.wheelproject.examplespringbootconsumer;
 
 import com.wheelproject.example.common.model.User;
 import com.wheelproject.example.common.service.UserService;
-import com.wheelproject.rpc.bootstrap.ConsumerBootstrap;
-import com.wheelproject.rpc.fault.retry.RetryStrategyKeys;
-import com.wheelproject.rpc.loadbalancer.LoadBalancerKeys;
-import com.wheelproject.rpc.proxy.ServiceProxyFactory;
 import com.wheelproject.rpc.springboot.starter.annotation.RpcReference;
 import org.springframework.stereotype.Service;
 

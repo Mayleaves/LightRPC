@@ -3,7 +3,6 @@ package com.wheelproject.rpc.server.tcpServer;
 import com.wheelproject.rpc.model.RpcRequest;
 import com.wheelproject.rpc.model.RpcResponse;
 import com.wheelproject.rpc.protocol.common.ProtocolMessage;
-import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageStatusEnum;
 import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageTypeEnum;
 import com.wheelproject.rpc.registry.LocalRegistry;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,12 +17,9 @@ import java.lang.reflect.Method;
  * 3. 返回 ProtocolMessage<RpcResponse>
  */
 public class NettyTcpServerHandler extends SimpleChannelInboundHandler<ProtocolMessage> {
+
     /**
      * 服务端处理请求
-     * @param ctx           the {@link ChannelHandlerContext} which this {@link SimpleChannelInboundHandler}
-     *                      belongs to
-     * @param msg           the message to handle
-     * @throws Exception
      */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ProtocolMessage msg) throws Exception {

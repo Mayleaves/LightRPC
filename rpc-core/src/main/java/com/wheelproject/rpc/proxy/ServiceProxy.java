@@ -1,6 +1,5 @@
 package com.wheelproject.rpc.proxy;
 
-import com.wheelproject.rpc.fault.retry.NoRetryStrategy;
 import com.wheelproject.rpc.fault.retry.RetryStrategy;
 import com.wheelproject.rpc.fault.retry.RetryStrategyFactory;
 import com.wheelproject.rpc.fault.tolerant.TolerantStrategy;
@@ -10,8 +9,6 @@ import com.wheelproject.rpc.loadbalancer.LoadBalancerFactory;
 import com.wheelproject.rpc.model.RpcRequest;
 import com.wheelproject.rpc.model.RpcResponse;
 import com.wheelproject.rpc.serializer.Serializer;
-import com.wheelproject.rpc.serializer.JdkSerializer;
-import com.wheelproject.rpc.serializer.HessianSerializer;
 import com.wheelproject.rpc.config.RpcConfig;
 import com.wheelproject.rpc.registry.Registry;
 import com.wheelproject.rpc.registry.RegistryFactory;
@@ -19,16 +16,9 @@ import com.wheelproject.rpc.model.ServiceMetaInfo;
 import com.wheelproject.rpc.serializer.SerializerFactory;
 import com.wheelproject.rpc.RpcApplication;
 import com.wheelproject.rpc.constant.RpcConstant;
-import com.wheelproject.rpc.protocol.common.ProtocolMessage;
-import com.wheelproject.rpc.protocol.common.ProtocolConstant;
-import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageSerializerEnum;
-import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageTypeEnum;
-import com.wheelproject.rpc.protocol.codec.ProtocolMessageEncoder;
-import com.wheelproject.rpc.protocol.codec.ProtocolMessageDecoder;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.ServiceLoader;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
@@ -38,17 +28,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import com.wheelproject.rpc.server.tcpServer.VertxTcpClient;
-import io.vertx.core.Vertx;
-import io.vertx.core.net.NetClient;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import cn.hutool.core.util.IdUtil;
-import io.vertx.core.buffer.Buffer;
-
 import com.wheelproject.rpc.server.tcpServer.NettyTcpClient;
+import com.wheelproject.rpc.server.tcpServer.VertxTcpClient;
 
 /**
  * 服务代理（JDK 动态代理）
@@ -97,11 +78,9 @@ public class ServiceProxy implements InvocationHandler {
             try{
                 // 重试机制
                 RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
-                // 1. 发送 Vertx/Netty HTTP 请求
-//                rpcResponse = retryStrategy.doRetry(()->
-//                    doHttpRequest(rpcRequest, selectedServiceMetaInfo)
-//                );
                 rpcResponse = retryStrategy.doRetry(() ->
+                        // 1. 发送 Vertx/Netty HTTP 请求
+//                        doHttpRequest(rpcRequest, selectedServiceMetaInfo)
                         // 2.1 发送 Vertx TCP 请求
                         VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
                         // 2.2 发送 Netty TCP 请求
@@ -110,10 +89,6 @@ public class ServiceProxy implements InvocationHandler {
             } catch (Exception e){
                 // 容错机制
                 TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
-                System.out.println("method:"+method);
-                System.out.println("rpcRequest:"+rpcRequest);
-                System.out.println("rpcConfig:"+rpcConfig);
-                System.out.println("e:"+e);
                 rpcResponse = tolerantStrategy.doTolerant(null, e);
             }
 
@@ -125,10 +100,6 @@ public class ServiceProxy implements InvocationHandler {
 
     /**
      * 发送 Vertx/Netty HTTP 请求
-     * @param rpcRequest
-     * @param selectedServiceMetaInfo
-     * @return
-     * @throws IOException
      */
     private static RpcResponse doHttpRequest(RpcRequest rpcRequest, ServiceMetaInfo selectedServiceMetaInfo) throws IOException {
         // 自定义实现 SPI

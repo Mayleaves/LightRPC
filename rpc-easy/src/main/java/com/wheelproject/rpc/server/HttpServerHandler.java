@@ -67,9 +67,6 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
     /**
      * 响应
      *
-     * @param request
-     * @param rpcResponse
-     * @param serializer
      */
     void doResponse(HttpServerRequest request, RpcResponse rpcResponse, Serializer serializer) {
         HttpServerResponse httpServerResponse = request.response()

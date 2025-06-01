@@ -2,9 +2,6 @@ package com.wheelproject.rpc.springboot.starter.bootstrap;
 
 import com.wheelproject.rpc.RpcApplication;
 import com.wheelproject.rpc.config.RpcConfig;
-import com.wheelproject.rpc.server.httpServer.NettyHttpServer;
-import com.wheelproject.rpc.server.httpServer.VertxHttpServer;
-import com.wheelproject.rpc.server.tcpServer.NettyTcpServer;
 import com.wheelproject.rpc.server.tcpServer.VertxTcpServer;
 import com.wheelproject.rpc.springboot.starter.annotation.EnableRpc;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +19,6 @@ public class RpcInitBootstrap implements ImportBeanDefinitionRegistrar {
     /**
      * Spring 初始化时执行，初始化 RPC 框架
      *
-     * @param importingClassMetadata
-     * @param registry
      */
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {

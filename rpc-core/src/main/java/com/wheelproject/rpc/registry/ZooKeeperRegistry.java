@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 /**
  * zookeeper 注册中心
- * 操作文档：<a href="https://curator.apache.org/docs/getting-started">Apache Curator</a>
  */
 @Slf4j
 public class ZooKeeperRegistry implements Registry {
@@ -37,9 +36,15 @@ public class ZooKeeperRegistry implements Registry {
     private final Set<String> localRegisterNodeKeySet = new HashSet<>();
 
     /**
-     * 注册中心服务缓存
+     * 注册中心服务缓存（只支持单个服务缓存，已废弃，请使用下方的 RegistryServiceMultiCache）
      */
+    @Deprecated
     private final RegistryServiceCache registryServiceCache = new RegistryServiceCache();
+
+    /**
+     * 注册中心服务缓存（支持多个服务键）
+     */
+    private final RegistryServiceMultiCache registryServiceMultiCache = new RegistryServiceMultiCache();
 
     /**
      * 正在监听的 key 集合
@@ -104,7 +109,10 @@ public class ZooKeeperRegistry implements Registry {
         System.out.println("Discovering services for key: " + serviceKey);
 
         // 优先从缓存获取服务
-        List<ServiceMetaInfo> cachedServiceMetaInfoList = registryServiceCache.readCache();
+        // 1. 单个服务缓存
+//         List<ServiceMetaInfo> cachedServiceMetaInfoList = registryServiceCache.readCache();
+        // 2. 支持多个服务同时缓存
+        List<ServiceMetaInfo> cachedServiceMetaInfoList = registryServiceMultiCache.readCache(serviceKey);
         if (cachedServiceMetaInfoList != null) {
             return cachedServiceMetaInfoList;
         }
@@ -119,7 +127,10 @@ public class ZooKeeperRegistry implements Registry {
                     .collect(Collectors.toList());
 
             // 写入服务缓存
-            registryServiceCache.writeCache(serviceMetaInfoList);
+            // 1. 单个服务缓存
+//            registryServiceCache.writeCache(serviceMetaInfoList);
+            // 2. 支持多个服务同时缓存
+            registryServiceMultiCache.writeCache(serviceKey, serviceMetaInfoList);
             return serviceMetaInfoList;
         } catch (Exception e) {
             throw new RuntimeException("获取服务列表失败", e);
@@ -145,8 +156,12 @@ public class ZooKeeperRegistry implements Registry {
             curatorCache.listenable().addListener(
                     CuratorCacheListener
                             .builder()
-                            .forDeletes(childData -> registryServiceCache.clearCache())
-                            .forChanges(((oldNode, node) -> registryServiceCache.clearCache()))
+                            // 1. 单个服务缓存
+//                            .forDeletes(childData -> registryServiceCache.clearCache())
+//                            .forChanges(((oldNode, node) -> registryServiceCache.clearCache()))
+                            // 2. 支持多个服务同时缓存
+                            .forDeletes(childData -> registryServiceMultiCache.clearCache(serviceNodeKey))
+                            .forChanges(((oldNode, node) -> registryServiceMultiCache.clearCache(serviceNodeKey)))
                             .build()
             );
         }

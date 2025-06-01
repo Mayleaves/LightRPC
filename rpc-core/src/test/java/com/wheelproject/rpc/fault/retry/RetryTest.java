@@ -1,7 +1,5 @@
 package com.wheelproject.rpc.fault.retry;
 
-import com.wheelproject.rpc.fault.retry.NoRetryStrategy;
-import com.wheelproject.rpc.fault.retry.RetryStrategy;
 import com.wheelproject.rpc.model.RpcResponse;
 import org.junit.Test;
 

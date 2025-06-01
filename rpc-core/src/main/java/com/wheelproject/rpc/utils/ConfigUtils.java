@@ -24,11 +24,6 @@ public class ConfigUtils {
     /**
      * 加载配置对象，支持区分环境，如 application-prod.properties 表示生产环境、 application-test.properties 表示测试环境
      *
-     * @param tClass
-     * @param prefix
-     * @param environment
-     * @param <T>
-     * @return
      */
     public static <T> T loadConfig(Class<T> tClass, String prefix, String environment) {
         // 动态构建配置文件名，基础名称是 "application"
