@@ -1,5 +1,3 @@
-> 复刻对象：[鱼皮 RPC 框架](https://github.com/liyupi/yu-rpc)
->
 > 建议：
 >
 > - 简易版：Java JDK>= 8；
