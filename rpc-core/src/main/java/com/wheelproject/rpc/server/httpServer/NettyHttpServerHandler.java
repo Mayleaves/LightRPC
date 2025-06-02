@@ -17,14 +17,13 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 
 /**
- * 通道内处理请求
+ * Netty HTTP 请求处理器
  *
  * 1.反序列化请求为对象，并从对象中获取参数
  * 2.根据服务名从本地注册器中获取服务实现类
  * 3.通过反射，拿到返回结果
  * 4.对返回结果进行封装和序列化，并写入响应
  */
-
 public class NettyHttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     // 指定序列化器

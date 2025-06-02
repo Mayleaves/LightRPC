@@ -1,7 +1,7 @@
 package com.wheelproject.rpc.protocol.common;
 
 /**
- * 协议常量
+ * 协议默认常量
  */
 public interface ProtocolConstant {
 

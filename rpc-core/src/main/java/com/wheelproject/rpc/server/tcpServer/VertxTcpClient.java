@@ -5,8 +5,8 @@ import com.wheelproject.rpc.RpcApplication;
 import com.wheelproject.rpc.model.RpcRequest;
 import com.wheelproject.rpc.model.RpcResponse;
 import com.wheelproject.rpc.model.ServiceMetaInfo;
-import com.wheelproject.rpc.protocol.codec.ProtocolMessageDecoder;
-import com.wheelproject.rpc.protocol.codec.ProtocolMessageEncoder;
+import com.wheelproject.rpc.protocol.codec.VertxMessageDecoder;
+import com.wheelproject.rpc.protocol.codec.VertxMessageEncoder;
 import com.wheelproject.rpc.protocol.common.ProtocolConstant;
 import com.wheelproject.rpc.protocol.common.ProtocolMessage;
 import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageSerializerEnum;
@@ -63,7 +63,7 @@ public class VertxTcpClient {
 
                     // 编码请求
                     try {
-                        Buffer encodeBuffer = ProtocolMessageEncoder.encode(protocolMessage);
+                        Buffer encodeBuffer = VertxMessageEncoder.encode(protocolMessage);
                         socket.write(encodeBuffer);
                     } catch (IOException e) {
                         throw new RuntimeException("协议消息编码错误");
@@ -74,7 +74,7 @@ public class VertxTcpClient {
                             buffer -> {
                                 try {
                                     ProtocolMessage<RpcResponse> rpcResponseProtocolMessage =
-                                            (ProtocolMessage<RpcResponse>) ProtocolMessageDecoder.decode(buffer);
+                                            (ProtocolMessage<RpcResponse>) VertxMessageDecoder.decode(buffer);
                                     responseFuture.complete(rpcResponseProtocolMessage.getBody());
                                 } catch (IOException e) {
                                     throw new RuntimeException("协议消息解码错误");

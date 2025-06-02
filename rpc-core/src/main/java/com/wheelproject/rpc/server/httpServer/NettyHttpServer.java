@@ -11,6 +11,9 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
+/**
+ * Netty HTTP 服务器
+ */
 public class NettyHttpServer implements HttpServer {
     @Override
     public void run(int port) {

@@ -8,15 +8,15 @@ import com.wheelproject.rpc.protocol.common.ProtocolMessage;
 import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageSerializerEnum;
 import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageStatusEnum;
 import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageTypeEnum;
-import com.wheelproject.rpc.protocol.codec.ProtocolMessageEncoder;
-import com.wheelproject.rpc.protocol.codec.ProtocolMessageDecoder;
+import com.wheelproject.rpc.protocol.codec.VertxMessageEncoder;
+import com.wheelproject.rpc.protocol.codec.VertxMessageDecoder;
 import io.vertx.core.buffer.Buffer;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 
-public class ProtocolMessageTest {
+public class VertxProtocolMessageTest {
     @Test
     public void testEncodeAndDecode() throws IOException {
         // 构造消息
@@ -38,8 +38,8 @@ public class ProtocolMessageTest {
         protocolMessage.setHeader(header);
         protocolMessage.setBody(rpcRequest);
 
-        Buffer encodeBuffer = ProtocolMessageEncoder.encode(protocolMessage);
-        ProtocolMessage<?> message = ProtocolMessageDecoder.decode(encodeBuffer);
+        Buffer encodeBuffer = VertxMessageEncoder.encode(protocolMessage);
+        ProtocolMessage<?> message = VertxMessageDecoder.decode(encodeBuffer);
         Assert.assertNotNull(message);
     }
 }

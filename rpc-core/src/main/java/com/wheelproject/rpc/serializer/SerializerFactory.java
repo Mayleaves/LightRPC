@@ -9,10 +9,10 @@ import java.util.Map;
  * 序列化工厂：用于获取序列化器对象
  */
 public class SerializerFactory {
+
     /**
      * 序列化映射：用于实现单例
      */
-
     // 1. 硬编码 HashMap 存储序列化器和实现类
 //    private static final Map<String,Serializer> KEY_SERIALIZER_MAP = new HashMap<String,Serializer>(){{
 //        KEY_SERIALIZER_MAP.put(SerializerKeys.JDK,new JdkSerializer());
@@ -24,7 +24,7 @@ public class SerializerFactory {
     // 2. SPI 加载指定序列化器对象
     // 静态代码块加载
     static {
-        // 工厂首次加载时，调用load方法加载序列化接口所有实现类，再用getInstance获取实现类对象
+        // 工厂首次加载时，调用 load 方法加载序列化接口所有实现类，再用 getInstance 获取实现类对象
         SpiLoader.load(Serializer.class);
     }
 

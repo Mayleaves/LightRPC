@@ -4,7 +4,7 @@ import com.wheelproject.rpc.registry.RegistryKeys;
 import lombok.Data;
 
 /**
- * PRC 注册中心配置
+ * RPC 注册中心配置项
  */
 @Data
 public class RegistryConfig {

@@ -9,7 +9,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 /**
- * 自定义格式编码
+ * Netty TCP 协议消息编码器
  */
 public class NettyMessageEncoder extends MessageToByteEncoder<ProtocolMessage> {
 

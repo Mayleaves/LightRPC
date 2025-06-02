@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * zookeeper 注册中心
+ * ZooKeeper 注册中心
  */
 @Slf4j
 public class ZooKeeperRegistry implements Registry {

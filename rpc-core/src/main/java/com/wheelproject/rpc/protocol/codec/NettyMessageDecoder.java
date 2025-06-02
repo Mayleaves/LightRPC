@@ -15,7 +15,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import java.util.List;
 
 /**
- * 自定义格式解码
+ * Netty TCP 协议消息解码器
  */
 public class NettyMessageDecoder extends ByteToMessageDecoder {
 

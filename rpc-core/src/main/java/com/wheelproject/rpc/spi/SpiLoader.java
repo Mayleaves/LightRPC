@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * SPI加载器
+ * SPI 加载器
  */
 @Slf4j
 public class SpiLoader {
@@ -54,10 +54,6 @@ public class SpiLoader {
     /**
      * 获取某个接口的实例
      *
-     * @param tClass
-     * @param key
-     * @param <T>
-     * @return
      */
     public static <T> T getInstance(Class<?> tClass, String key) {
         String tClassName = tClass.getName();
@@ -86,8 +82,6 @@ public class SpiLoader {
     /**
      * 加载某个类型
      *
-     * @param loadClass
-     * @return
      */
     public static Map<String, Class<?>> load(Class<?> loadClass) {
         log.info("加载类型为：{} 的 SPI", loadClass.getName());

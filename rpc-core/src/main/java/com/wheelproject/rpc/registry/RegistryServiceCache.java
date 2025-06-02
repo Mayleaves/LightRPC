@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * 注册中心服务本地缓存：用于存储服务提供者信息
+ * (仅支持单个服务)
  */
 public class RegistryServiceCache {
     /**

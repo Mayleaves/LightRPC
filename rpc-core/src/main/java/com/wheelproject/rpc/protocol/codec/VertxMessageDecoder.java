@@ -13,10 +13,10 @@ import io.vertx.core.buffer.Buffer;
 import java.io.IOException;
 
 /**
- * 协议消息解码器
+ * Vertx TCP 协议消息解码器
  *
  */
-public class ProtocolMessageDecoder {
+public class VertxMessageDecoder {
 
     /**
      * 解码

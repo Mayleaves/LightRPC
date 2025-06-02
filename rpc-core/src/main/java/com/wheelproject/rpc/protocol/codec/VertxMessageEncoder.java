@@ -9,10 +9,10 @@ import io.vertx.core.buffer.Buffer;
 import java.io.IOException;
 
 /**
- * 协议消息编码器
+ * Vertx TCP 协议消息编码器
  *
  */
-public class ProtocolMessageEncoder {
+public class VertxMessageEncoder {
 
     /**
      * 编码

@@ -2,8 +2,8 @@ package com.wheelproject.rpc.server.tcpServer;
 
 import com.wheelproject.rpc.model.RpcRequest;
 import com.wheelproject.rpc.model.RpcResponse;
-import com.wheelproject.rpc.protocol.codec.ProtocolMessageDecoder;
-import com.wheelproject.rpc.protocol.codec.ProtocolMessageEncoder;
+import com.wheelproject.rpc.protocol.codec.VertxMessageDecoder;
+import com.wheelproject.rpc.protocol.codec.VertxMessageEncoder;
 import com.wheelproject.rpc.protocol.common.ProtocolMessage;
 import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageStatusEnum;
 import com.wheelproject.rpc.protocol.messageEnum.ProtocolMessageTypeEnum;
@@ -31,7 +31,7 @@ public class VertxTcpServerHandler implements Handler<NetSocket> {
             // 接受请求，解码
             ProtocolMessage<RpcRequest> protocolMessage;
             try {
-                protocolMessage = (ProtocolMessage<RpcRequest>) ProtocolMessageDecoder.decode(buffer);
+                protocolMessage = (ProtocolMessage<RpcRequest>) VertxMessageDecoder.decode(buffer);
             } catch (IOException e) {
                 throw new RuntimeException("协议消息解码错误");
             }
@@ -61,7 +61,7 @@ public class VertxTcpServerHandler implements Handler<NetSocket> {
             header.setStatus((byte) ProtocolMessageStatusEnum.OK.getValue());
             ProtocolMessage<RpcResponse> responseProtocolMessage = new ProtocolMessage<>(header, rpcResponse);
             try {
-                Buffer encode = ProtocolMessageEncoder.encode(responseProtocolMessage);
+                Buffer encode = VertxMessageEncoder.encode(responseProtocolMessage);
                 socket.write(encode);
             } catch (IOException e) {
                 throw new RuntimeException("协议消息编码错误");

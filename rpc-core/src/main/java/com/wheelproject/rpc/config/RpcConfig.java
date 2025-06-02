@@ -7,7 +7,7 @@ import lombok.Data;
 import com.wheelproject.rpc.serializer.SerializerKeys;
 
 /**
- * RPC 框架全局配置
+ * RPC 框架全局配置项
  */
 @Data
 public class RpcConfig {

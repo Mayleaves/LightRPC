@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 
 /**
- * HTTP 请求处理
+ * Vertx HTTP 请求处理器
  */
 public class VertxHttpServerHandler implements Handler<HttpServerRequest> {
 

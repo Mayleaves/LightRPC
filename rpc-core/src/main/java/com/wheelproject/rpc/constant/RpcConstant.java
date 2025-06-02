@@ -1,7 +1,7 @@
 package com.wheelproject.rpc.constant;
 
 /**
- * RPC 相关常量
+ * RPC 默认常量
  */
 public interface RpcConstant {
 
