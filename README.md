@@ -1831,7 +1831,7 @@ throw new RuntimeException("调用失败");
 responseFuture.completeExceptionally(new RuntimeException("连接失败："+ result.cause()));
 ```
 
-![image-20250528213828714](https://gitee.com/Koletis/pic-go/raw/master/202505282138966.png)
+<img src="https://gitee.com/Koletis/pic-go/raw/master/202505282138966.png" alt="image-20250528213828714" style="zoom:80%;" />
 
 测试运行顺序：`zkServer.cmd` > `zkCli.cmd` > (Run)`ProviderExample` > (Debug)`ConsumerExample` > `RetryTest`。
 
@@ -1911,7 +1911,7 @@ responseFuture.completeExceptionally(new RuntimeException("连接失败："+ res
 
 准备工作：如图 3 个位置打上断点。
 
-![image-20250529115209460](https://gitee.com/Koletis/pic-go/raw/master/202505291152781.png)
+<img src="https://gitee.com/Koletis/pic-go/raw/master/202505291152781.png" alt="image-20250529115209460"  />
 
 ```java
 // ServiceProxy
@@ -2015,3 +2015,38 @@ throw new RuntimeException("调用失败");
 
 ![image-20250601152527993](https://gitee.com/Koletis/pic-go/raw/master/202506011525307.png)
 
+# 14. 自定义异常
+
+## 14.1 开发实现
+
+1. constant
+
+- MessageConstant：信息提示常量类。
+
+2. exception - 自定义异常
+
+- InvocationFailedException：调用失败。
+- NoServiceAddressException：暂无服务地址。
+- ProtocolMessageEncodingErrorException：协议消息编码错误。
+
+## 14.2 测试验证
+
+> 以下测试配置是 Vertx - TCP - Etcd。
+
+准备工作：下面 2 个位置打上断点。
+
+```java
+// ServiceProxy
+List<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
+throw new InvocationFailedException(MessageConstant.INVOCATION_FAILED);
+```
+
+测试运行顺序：`etcd.exe` > (Run)`ProviderExample` > (Debug)`ConsumerExample`。
+
+`ServiceProxy`：
+
+![image-20250604113201382](https://gitee.com/Koletis/pic-go/raw/master/202506041132686.png)
+
+ `ConsumerExample`：当断点触发时，手动停止服务提供者，然后再运行完（`Resume Program`）。
+
+![image-20250604113209675](https://gitee.com/Koletis/pic-go/raw/master/202506041132946.png)
