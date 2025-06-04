@@ -1,5 +1,8 @@
 package com.wheelproject.rpc.proxy;
 
+import com.wheelproject.rpc.constant.MessageConstant;
+import com.wheelproject.rpc.exception.InvocationFailedException;
+import com.wheelproject.rpc.exception.NoServiceAddressException;
 import com.wheelproject.rpc.fault.retry.RetryStrategy;
 import com.wheelproject.rpc.fault.retry.RetryStrategyFactory;
 import com.wheelproject.rpc.fault.tolerant.TolerantStrategy;
@@ -64,7 +67,7 @@ public class ServiceProxy implements InvocationHandler {
             List<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
             // 在这一句之后打断点，否则会出现 RuntimeException。
             if (CollUtil.isEmpty(serviceMetaInfoList)) {
-                throw new RuntimeException("暂无服务地址");
+                throw new NoServiceAddressException(MessageConstant.NO_SERVICE_ADDRESS);
             }
 
             // 负载均衡
@@ -94,7 +97,7 @@ public class ServiceProxy implements InvocationHandler {
 
             return rpcResponse.getData();
         } catch (Exception e) {
-            throw new RuntimeException("调用失败");
+            throw new InvocationFailedException(MessageConstant.INVOCATION_FAILED);
         }
     }
 

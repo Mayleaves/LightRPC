@@ -25,7 +25,6 @@ public class VertxTcpServerHandler implements Handler<NetSocket> {
     /**
      * 处理请求
      *
-     * @param socket the event to handle
      */
     @Override
     public void handle(NetSocket socket) {
@@ -35,7 +34,7 @@ public class VertxTcpServerHandler implements Handler<NetSocket> {
             try {
                 protocolMessage = (ProtocolMessage<RpcRequest>) VertxMessageDecoder.decode(buffer);
             } catch (IOException e) {
-                throw new RuntimeException("协议消息解码错误");
+                throw new ProtocolMessageEncodingErrorException(MessageConstant.PROTOCOL_MESSAGE_ENCODING_ERROR);
             }
             RpcRequest rpcRequest = protocolMessage.getBody();
             ProtocolMessage.Header header = protocolMessage.getHeader();
