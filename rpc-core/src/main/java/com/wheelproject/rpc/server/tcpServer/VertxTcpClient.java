@@ -2,6 +2,8 @@ package com.wheelproject.rpc.server.tcpServer;
 
 import cn.hutool.core.util.IdUtil;
 import com.wheelproject.rpc.RpcApplication;
+import com.wheelproject.rpc.constant.MessageConstant;
+import com.wheelproject.rpc.exception.ProtocolMessageEncodingErrorException;
 import com.wheelproject.rpc.model.RpcRequest;
 import com.wheelproject.rpc.model.RpcResponse;
 import com.wheelproject.rpc.model.ServiceMetaInfo;
@@ -66,7 +68,7 @@ public class VertxTcpClient {
                         Buffer encodeBuffer = VertxMessageEncoder.encode(protocolMessage);
                         socket.write(encodeBuffer);
                     } catch (IOException e) {
-                        throw new RuntimeException("协议消息编码错误");
+                        throw new ProtocolMessageEncodingErrorException(MessageConstant.PROTOCOL_MESSAGE_ENCODING_ERROR);
                     }
 
                     // 接收响应
@@ -77,7 +79,7 @@ public class VertxTcpClient {
                                             (ProtocolMessage<RpcResponse>) VertxMessageDecoder.decode(buffer);
                                     responseFuture.complete(rpcResponseProtocolMessage.getBody());
                                 } catch (IOException e) {
-                                    throw new RuntimeException("协议消息解码错误");
+                                    throw new ProtocolMessageEncodingErrorException(MessageConstant.PROTOCOL_MESSAGE_ENCODING_ERROR);
                                 }
                             }
                     );

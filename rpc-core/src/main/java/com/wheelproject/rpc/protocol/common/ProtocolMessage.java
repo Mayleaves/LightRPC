@@ -24,6 +24,7 @@ public class ProtocolMessage<T> {
 
     /**
      * 协议请求头的结构定义
+     * 自定义二进制协议头
      */
     @Data
     public static class Header {

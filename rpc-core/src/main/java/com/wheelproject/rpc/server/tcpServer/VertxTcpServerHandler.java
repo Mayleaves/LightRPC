@@ -1,5 +1,7 @@
 package com.wheelproject.rpc.server.tcpServer;
 
+import com.wheelproject.rpc.constant.MessageConstant;
+import com.wheelproject.rpc.exception.ProtocolMessageEncodingErrorException;
 import com.wheelproject.rpc.model.RpcRequest;
 import com.wheelproject.rpc.model.RpcResponse;
 import com.wheelproject.rpc.protocol.codec.VertxMessageDecoder;
@@ -64,7 +66,7 @@ public class VertxTcpServerHandler implements Handler<NetSocket> {
                 Buffer encode = VertxMessageEncoder.encode(responseProtocolMessage);
                 socket.write(encode);
             } catch (IOException e) {
-                throw new RuntimeException("协议消息编码错误");
+                throw new ProtocolMessageEncodingErrorException(MessageConstant.PROTOCOL_MESSAGE_ENCODING_ERROR);
             }
         });
         socket.handler(bufferHandlerWrapper);
